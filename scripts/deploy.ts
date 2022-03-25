@@ -1,29 +1,41 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const RINKEBY = 4;
+  const BINANCE_TESTNET = 97;
+  const SIGNER_ADDRESS = "0x21a005baEA890D336e81B8F18425080E84c83881"; //это второй адрес из мнемоника
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  // deploy
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  await greeter.deployed();
+  const factoryERC20 = await ethers.getContractFactory("DimaERC20");
+  const contractERC20 = await factoryERC20.deploy(ethers.utils.parseUnits("10000.0", 18));
+  await contractERC20.deployed();
+  console.log("DimaERC20:", contractERC20.address);
 
-  console.log("Greeter deployed to:", greeter.address);
+  const factoryBridge = await ethers.getContractFactory("DimaBridge");
+
+  const hre = require("hardhat");
+
+  let chainID = BINANCE_TESTNET;  //RINKEBY; - тут при втором деплое поменял
+  const contractBridge = await factoryBridge.deploy(chainID);
+  await contractBridge.deployed();
+  console.log("DimaBridge:", contractBridge.address, "chainID:", chainID);
+
+
+  //настойка для Бинаса (а для ринкеби было через таски)
+  let success = await contractERC20.setBridge(contractBridge.address);
+  console.log('setBridge: ', success);
+
+  success = await contractBridge.setToken(contractERC20.address);
+  console.log('setToken: ', success);
+
+  success = await contractBridge.setSigner(SIGNER_ADDRESS);
+  console.log('setSigner: ', success);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+// run
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

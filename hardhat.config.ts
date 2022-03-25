@@ -2,7 +2,9 @@ import * as dotenv from "dotenv";
 
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
+
 import "@nomiclabs/hardhat-ethers";
+
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
@@ -22,6 +24,12 @@ const config: HardhatUserConfig = {
       //accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       accounts: { mnemonic: process.env.MNEMONIC, }
     },
+
+    binance_testnet: {
+      url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+      accounts: { mnemonic: process.env.MNEMONIC, }
+    },
+
 
     //workaround for coverage error: InvalidInputError: Transaction gasPrice (1) is too low for the next block, which has a baseFeePerGas of 875000000
     hardhat: {
