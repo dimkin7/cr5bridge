@@ -16,8 +16,12 @@ contract DimaERC20 is ERC20, AccessControl {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function setBridge(address bridge) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setupRole(BRIDGE_ROLE, bridge);
+    function addBridge(address bridge) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(BRIDGE_ROLE, bridge);
+    }
+
+    function removeBridge(address bridge) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        revokeRole(BRIDGE_ROLE, bridge);
     }
 
     function mint(address to, uint256 amount) public onlyRole(BRIDGE_ROLE) {

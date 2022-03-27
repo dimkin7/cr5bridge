@@ -43,12 +43,12 @@ describe("Bridge", function () {
     erc20_1.transfer(sender.address, ethers.utils.parseUnits("100.0", 18));
   });
 
-  it("setToken, setBridge", async function () {
+  it("addToken, addBridge", async function () {
     await bridge_1.addToken(erc20_1.address);
-    await erc20_1.setBridge(bridge_1.address);
+    await erc20_1.addBridge(bridge_1.address);
 
     await bridge_2.addToken(erc20_2.address);
-    await erc20_2.setBridge(bridge_2.address);
+    await erc20_2.addBridge(bridge_2.address);
 
     await bridge_2.addSigner(backendService.address);
   });

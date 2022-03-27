@@ -1,38 +1,35 @@
-import { ethers } from "hardhat";
+import { ethers, config } from "hardhat";
 
 async function main() {
-  const RINKEBY = 4;
-  const BINANCE_TESTNET = 97;
-  const SIGNER_ADDRESS = "0x21a005baEA890D336e81B8F18425080E84c83881"; //это второй адрес из мнемоника
+  const SIGNER_ADDRESS = "0x21a005baEA890D336e81B8F18425080E84c83881"; //это второй адрес из мнемоника, он будет для подписи, третий - для rinkeby,  четвертый для binance_testnet
+  const network = await ethers.provider.getNetwork();
 
-  // deploy
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
+  //deploy ERC20
   const factoryERC20 = await ethers.getContractFactory("DimaERC20");
-  const contractERC20 = await factoryERC20.deploy(ethers.utils.parseUnits("10000.0", 18));
+  const contractERC20 = await factoryERC20.deploy("Dima ERC20 2022.03.27", "Dima_ERC20_2022.03.27", ethers.utils.parseUnits("10000.0", 18));
   await contractERC20.deployed();
-  console.log("DimaERC20:", contractERC20.address);
+  console.log(await contractERC20.symbol(), contractERC20.address);
 
   const factoryBridge = await ethers.getContractFactory("DimaBridge");
 
-  const hre = require("hardhat");
-
-  let chainID = BINANCE_TESTNET;  //RINKEBY; - тут при втором деплое поменял
-  const contractBridge = await factoryBridge.deploy(chainID);
+  // deploy Bridge
+  const contractBridge = await factoryBridge.deploy(network.chainId);
   await contractBridge.deployed();
-  console.log("DimaBridge:", contractBridge.address, "chainID:", chainID);
+  console.log("DimaBridge:", contractBridge.address, "chainId:", network.chainId);
 
 
-  //настойка для Бинаса (а для ринкеби было через таски)
-  let success = await contractERC20.setBridge(contractBridge.address);
-  console.log('setBridge: ', success);
+  //записываем в токены адрес моста
+  let success = await contractERC20.addBridge(contractBridge.address);
+  console.log('addBridge: ', success);
 
-  success = await contractBridge.setToken(contractERC20.address);
-  console.log('setToken: ', success);
+  success = await contractBridge.addToken(contractERC20.address);
+  console.log('addToken: ', success);
 
-  success = await contractBridge.setSigner(SIGNER_ADDRESS);
-  console.log('setSigner: ', success);
+  success = await contractBridge.addSigner(SIGNER_ADDRESS);
+  console.log('addSigner: ', success);
 }
 
 // run

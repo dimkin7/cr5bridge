@@ -13,22 +13,22 @@ dotenv.config();
 const BINANCE_TESTNET_CHAINID = 97;
 
 
+//это ушло в деплой
+// //npx hardhat set-token-rinkeby --network rinkeby
+// task("set-token-rinkeby", "set-token-rinkeby")
+//   .setAction(async (taskArgs, hre) => {
+//     const bridge = await hre.ethers.getContractAt("DimaBridge", DimaBridge_Rinkeby);
+//     let success = await bridge.addToken(DimaERC20_Rinkeby);
+//     console.log('result: ', success);
+//   });
 
-//npx hardhat set-token-rinkeby --network rinkeby
-task("set-token-rinkeby", "set-token-rinkeby")
-  .setAction(async (taskArgs, hre) => {
-    const bridge = await hre.ethers.getContractAt("DimaBridge", DimaBridge_Rinkeby);
-    let success = await bridge.addToken(DimaERC20_Rinkeby);
-    console.log('result: ', success);
-  });
-
-//npx hardhat set-bridge-rinkeby --network rinkeby
-task("set-bridge-rinkeby", "set-bridge-rinkeby")
-  .setAction(async (taskArgs, hre) => {
-    const token = await hre.ethers.getContractAt("DimaERC20", DimaERC20_Rinkeby);
-    let success = await token.setBridge(DimaBridge_Rinkeby);
-    console.log('result: ', success);
-  });
+// //npx hardhat set-bridge-rinkeby --network rinkeby
+// task("set-bridge-rinkeby", "set-bridge-rinkeby")
+//   .setAction(async (taskArgs, hre) => {
+//     const token = await hre.ethers.getContractAt("DimaERC20", DimaERC20_Rinkeby);
+//     let success = await token.setBridge(DimaBridge_Rinkeby);
+//     console.log('result: ', success);
+//   });
 
 
 

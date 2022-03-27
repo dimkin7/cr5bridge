@@ -20,12 +20,14 @@ const config: HardhatUserConfig = {
   networks: {
 
     rinkeby: {
+      chainId: 4,
       url: process.env.RENKEBY_URL || '',
       //accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       accounts: { mnemonic: process.env.MNEMONIC, }
     },
 
     binance_testnet: {
+      chainId: 97,
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
       accounts: { mnemonic: process.env.MNEMONIC, }
     },
