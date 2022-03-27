@@ -7,7 +7,11 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract DimaERC20 is ERC20, AccessControl {
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
-    constructor(uint256 initialSupply) ERC20("Dima ERC20", "DIMA_ERC20") {
+    constructor(
+        string memory name,
+        string memory symbol,
+        uint256 initialSupply
+    ) ERC20(name, symbol) {
         _mint(msg.sender, initialSupply);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }

@@ -18,7 +18,7 @@ const BINANCE_TESTNET_CHAINID = 97;
 task("set-token-rinkeby", "set-token-rinkeby")
   .setAction(async (taskArgs, hre) => {
     const bridge = await hre.ethers.getContractAt("DimaBridge", DimaBridge_Rinkeby);
-    let success = await bridge.setToken(DimaERC20_Rinkeby);
+    let success = await bridge.addToken(DimaERC20_Rinkeby);
     console.log('result: ', success);
   });
 
@@ -32,8 +32,9 @@ task("set-bridge-rinkeby", "set-bridge-rinkeby")
 
 
 
-//npx hardhat swap --network rinkeby --amount 16000000000000000000
+//npx hardhat swap --network rinkeby --token "DimaERC20"  --amount 16000000000000000000
 task("swap", "set-bridge-rinkeby")
+  .addParam("token", "Token symbol")
   .addParam("amount", "Amount")
   .setAction(async (taskArgs, hre) => {
     const bridge = await hre.ethers.getContractAt("DimaBridge", DimaBridge_Rinkeby);
@@ -42,9 +43,11 @@ task("swap", "set-bridge-rinkeby")
     const provider = new hre.ethers.providers.AlchemyProvider("rinkeby");
     sender = sender.connect(provider);
 
-    let success = await bridge.connect(sender).swap(receiver, BINANCE_TESTNET_CHAINID, taskArgs.amount);
+    //function swap(string memory tokenSymbol, address to, uint256 chainTo, uint256 amount)
+    let success = await bridge.connect(sender).swap(taskArgs.token, receiver, BINANCE_TESTNET_CHAINID, taskArgs.amount);
     console.log('result: ', success);
   });
+
 
 //npx hardhat sign 
 task("sign", "sign transaction")
@@ -82,7 +85,11 @@ task("sign", "sign transaction")
 
 //npx hardhat redeem --network binance_testnet --to "0x54b645581C078b7c31F9115D7d3ad1e4b0614bF9" --amount 16000000000000000000 --nonce 1 --v 27 --r 0xe508028c8beae7a3ea229501079f54c88206ca8855c11ab8c277e7a18aef12a3 --s 0x4cfb4e4a3a46ce98e9f619a636ae71a360aee5f1efbe15625dad8bfd5809689a
 task("redeem", "redeem")
+  .addParam("from", "from")
+  .addParam("chainFrom", "chainFrom")
   .addParam("to", "Address to")
+  .addParam("chainTo", "chainTo")
+  .addParam("token", "Token symbol")
   .addParam("amount", "Amount")
   .addParam("nonce", "nonce")
   .addParam("v", "v")
@@ -97,6 +104,7 @@ task("redeem", "redeem")
 
     receiver = receiver.connect(provider);
 
-    let success = await bridge.connect(receiver).redeem(taskArgs.to, taskArgs.amount, taskArgs.nonce, taskArgs.v, taskArgs.r, taskArgs.s);
+    //function redeem(address from, uint256 chainFrom, address to, uint256 chainTo, string memory tokenSymbol, uint256 amount, uint256 nonce, uint8 v, bytes32 r, bytes32 s )
+    let success = await bridge.connect(receiver).redeem(taskArgs.from, taskArgs.chainFrom, taskArgs.to, taskArgs.chainTo, taskArgs.token, taskArgs.amount, taskArgs.nonce, taskArgs.v, taskArgs.r, taskArgs.s);
     console.log('result: ', success);
   });
